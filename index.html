@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terms & Conditions: Infinite Scroll</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
+    #game {
+      height: 100vh;
+      overflow-y: scroll;
+      padding: 2rem;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .line {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+    .clause {
+      background: yellow;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #score {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    #popup {
+      position: fixed;
+      bottom: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      transition: bottom 0.5s ease-in-out;
+      z-index: 3;
+    }
+    #popup.show {
+      bottom: 2rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="score">Hidden Clauses Found: <span id="found">0</span></div>
+<div id="popup">
+  🍪 This site uses cookies to make sure you accept cookies. <br><br>
+  <button onclick="hidePopup()">Accept Cookies</button>
+</div>
+<div id="game"></div>
+
+<script>
+  const game = document.getElementById('game');
+  const foundSpan = document.getElementById('found');
+  const popup = document.getElementById('popup');
+  let foundCount = 0;
+  let linesRead = 0;
+
+  const normalLines = [
+    "By using this service, you agree to the following terms and conditions...",
+    "Your personal data may be stored in accordance with applicable regulations...",
+    "We do not take responsibility for lost socks during streaming sessions...",
+    "Use of this platform may be subject to arbitrary decisions by our algorithm...",
+    "Please enjoy responsibly."
+  ];
+
+  const hiddenClauses = [
+    "We own your dreams.",
+    "By scrolling, you forfeit your right to blink.",
+    "Your pet’s location may be tracked for convenience.",
+    "You agree to think positively about our brand.",
+    "We may sell your data to your high school ex."
+  ];
+
+  function addLine() {
+    const div = document.createElement('div');
+    div.className = 'line';
+    if (Math.random() < 0.02) { // 2% chance of hidden clause
+      div.classList.add('clause');
+      div.innerText = hiddenClauses[Math.floor(Math.random() * hiddenClauses.length)];
+      div.onclick = () => {
+        if (!div.classList.contains('found')) {
+          div.classList.add('found');
+          div.style.background = 'lime';
+          foundCount++;
+          foundSpan.innerText = foundCount;
+        }
+      }
+    } else {
+      div.innerText = normalLines[Math.floor(Math.random() * normalLines.length)];
+    }
+    game.appendChild(div);
+    linesRead++;
+
+    // Show cookie popup occasionally
+    if (linesRead % 50 === 0) {
+      popup.classList.add('show');
+    }
+  }
+
+  function hidePopup() {
+    popup.classList.remove('show');
+  }
+
+  // Infinite scroll simulation
+  function fillInitialLines(count) {
+    for (let i = 0; i < count; i++) addLine();
+  }
+
+  fillInitialLines(100);
+  game.addEventListener('scroll', () => {
+    if (game.scrollTop + game.clientHeight >= game.scrollHeight - 10) {
+      fillInitialLines(20);
+    }
+  });
+</script>
+
+</body>
+</html>
